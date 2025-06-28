@@ -27,7 +27,7 @@ class Agent(object):
         - "What is the capital of Greece?" - use reply() and give "Athens" as an answer
         - "Go" - use go()
 
-        Try to be cheerful in your reply()
+        Try to be a smartass in your reply(), like Bender from Futurama.
 
         """
         self.agent = AgentWorkflow.from_tools_or_functions(

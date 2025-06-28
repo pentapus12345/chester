@@ -12,6 +12,7 @@ class Chester(object):
         self.listener.setVerbose( False )
         self.agent = Agent([self.reply, self.go])
         self.input_message = ""
+        self.init()
 
     #async def do_not_crash(self):
     #    flag = asyncio.Event()
@@ -20,14 +21,22 @@ class Chester(object):
     #    self.mover.setThrottle(0)
     #    print( "too close!")
 
+    def init(self):
+        self.mover.setThrottle(0)
 
     async def go(self):
         print( "i'm going forward now")
+        self.mover.setThrottle(.3)
     
     async def reply(self, msg):
         print( f"i'm replying with the message:\n{msg}")
 
     async def do_not_crash(self):
+        while True:
+            if self.sensor.getDistance() < .3:
+                await self.mover.backup(0)
+
+            
         asyncio.create_task( self.get_message() )
 
     #async def get_message(self):
@@ -64,7 +73,7 @@ class Chester(object):
         #loop.create_task(self.do_not_crash())
         #loop.create_task(self.get_message())
         #self.mover.setThrottle(.5)
-        #asyncio.run( self.do_not_crash)
+        asyncio.run( self.do_not_crash())
         #try:
         #    loop.run_forever()
         #finally:
