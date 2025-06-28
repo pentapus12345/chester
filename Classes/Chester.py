@@ -1,6 +1,7 @@
 from Classes.Mover import Mover
 from Classes.UltrasonicSensor import UltrasonicSensor
 from Classes.Listener import Listener
+from Classes.Agent import Agent
 import asyncio
 
 class Chester(object):
@@ -9,6 +10,7 @@ class Chester(object):
         self.sensor = UltrasonicSensor()
         self.listener = Listener()
         self.listener.setVerbose( False )
+        self.agent = Agent([self.reply, self.go])
         self.input_message = ""
 
     #async def do_not_crash(self):
@@ -19,7 +21,11 @@ class Chester(object):
     #    print( "too close!")
 
 
-
+    async def go(self):
+        print( "i'm going forward now")
+    
+    async def reply(self, msg):
+        print( f"i'm replying with the message:\n{msg}")
 
     async def do_not_crash(self):
         asyncio.create_task( self.get_message() )
@@ -35,6 +41,7 @@ class Chester(object):
                 await self.execute_message(sentence)
 
 
+
     async def get_message(self):
         """
         Block until the user talks, then return the final sentence.
@@ -45,7 +52,8 @@ class Chester(object):
         return msg.strip()
 
     async def execute_message(self, msg: str):
-        print( msg )
+        print( f"I heard you say: {msg}" )
+        await self.agent.ask_agent(msg)
 
     async def main(self):
         await self.listen_loop()
