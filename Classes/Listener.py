@@ -21,6 +21,7 @@ class Listener(object):
         self.mic_rate = 48000 
         self.mic_index = 0
         self.verbose = True
+        self.print_to_screen=False
 
     def setVerbose( self, verbose: bool)->None:
         self.verbose = verbose
@@ -65,6 +66,8 @@ class Listener(object):
                         print(f"🛑  {silence_timeout}s silence – final: {last_txt}")
                     clean = last_txt.strip().upper()
                     self.recognizer.reset()
+                    if self.print_to_screen:
+                        print( f"You: {clean}")
                     return clean
                 
 

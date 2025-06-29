@@ -2,7 +2,13 @@ from Classes.Mover import Mover
 from Classes.UltrasonicSensor import UltrasonicSensor
 from Classes.Listener import Listener
 from Classes.Agent import Agent
+from Classes.Voice import Voice
 import asyncio
+from dotenv import load_dotenv
+import os
+import openai
+openai.api_key = os.getenv("OPENAI_API_KEY")
+print( os.getenv("OPENAI_API_KEY"))
 
 class Chester(object):
     def __init__(self):
@@ -10,8 +16,10 @@ class Chester(object):
         self.sensor = UltrasonicSensor()
         self.listener = Listener()
         self.listener.setVerbose( False )
-        self.agent = Agent([self.reply, self.go])
+        self.agent = Agent([self.say, self.go])
+        self.voice = Voice()
         self.input_message = ""
+        #api_key = os.getenv("OPEN_API_KEY")
         self.init()
 
     #async def do_not_crash(self):
@@ -23,13 +31,22 @@ class Chester(object):
 
     def init(self):
         self.mover.setThrottle(0)
+        self.listener.print_to_screen=True
+        self.verbose = True
+        self.voice.print_to_screen =True
+        self.agent.verbose = True
 
     async def go(self):
+        """Starts Chester moving forward"""
         print( "i'm going forward now")
         self.mover.setThrottle(.3)
     
-    async def reply(self, msg):
-        print( f"i'm replying with the message:\n{msg}")
+    async def say(self, msg: str):
+        """This function passes msg to the voice engine, 
+        which synthesizes a voice and speaks the text of the msg"""
+        if self.verbose:
+            print( f"I'm about to say {msg} using self.voice.say")
+        self.voice.say(msg)
 
     async def do_not_crash(self):
         while True:
@@ -61,7 +78,8 @@ class Chester(object):
         return msg.strip()
 
     async def execute_message(self, msg: str):
-        print( f"I heard you say: {msg}" )
+        if self.verbose:
+            print( f"executing message: {msg}")
         await self.agent.ask_agent(msg)
 
     async def main(self):
