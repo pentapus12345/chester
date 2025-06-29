@@ -6,7 +6,7 @@ load_dotenv()
 
 class Agent(object):
     def __init__(self, functions):
-        #os.environ["OPENAI_API_KEY"] = "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"
+        
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise RuntimeError("OPENAI_API_KEY not found in .env or environment")
