@@ -20,11 +20,14 @@ class Listener(object):
         )
         self.mic_rate = 48000 
         self.mic_index = 0
-        self.verbose = True
+        self.verbose = False
         self.print_to_screen=False
 
     def setVerbose( self, verbose: bool)->None:
         self.verbose = verbose
+    
+    def set_print_to_screen(self, print_to_screen: bool):
+        self.print_to_screen = print_to_screen
 
 
     def listen(self, silence_timeout: float = 2.0) -> str:

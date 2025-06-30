@@ -15,12 +15,13 @@ class Chester(object):
         self.mover = Mover()
         self.sensor = UltrasonicSensor()
         self.listener = Listener()
-        self.listener.setVerbose( False )
-        self.agent = Agent([self.say, self.go])
         self.voice = Voice()
+        self.agent = Agent([self.voice.say, self.go])
+
         self.input_message = ""
         #api_key = os.getenv("OPEN_API_KEY")
         self.init()
+
 
     #async def do_not_crash(self):
     #    flag = asyncio.Event()
@@ -31,10 +32,11 @@ class Chester(object):
 
     def init(self):
         self.mover.setThrottle(0)
-        self.listener.print_to_screen=True
-        self.verbose = True
-        self.voice.print_to_screen =True
-        self.agent.verbose = True
+        self.listener.set_print_to_screen(True)
+        self.verbose = False
+        self.voice.set_print_to_screen(True)
+        self.agent.verbose = False
+    
 
     async def go(self):
         """Starts Chester moving forward"""
@@ -46,7 +48,7 @@ class Chester(object):
         which synthesizes a voice and speaks the text of the msg"""
         if self.verbose:
             print( f"I'm about to say {msg} using self.voice.say")
-        self.voice.say(msg)
+        await asyncio.to_thread(self.voice.say(msg))
 
     async def do_not_crash(self):
         while True:
@@ -82,16 +84,21 @@ class Chester(object):
             print( f"executing message: {msg}")
         await self.agent.ask_agent(msg)
 
+
+
     async def main(self):
         await self.listen_loop()
 
     def run(self):
-        asyncio.run(self.main())
-        #loop = asyncio.get_event_loop()
-        #loop.create_task(self.do_not_crash())
-        #loop.create_task(self.get_message())
-        #self.mover.setThrottle(.5)
-        asyncio.run( self.do_not_crash())
+        try:
+            asyncio.run(self.main())
+            #loop = asyncio.get_event_loop()
+            #loop.create_task(self.do_not_crash())
+            #loop.create_task(self.get_message())
+            #self.mover.setThrottle(.5)
+            asyncio.run( self.do_not_crash())
+        finally:
+            self.mover.setThrottle(0)
         #try:
         #    loop.run_forever()
         #finally:

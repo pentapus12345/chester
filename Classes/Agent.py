@@ -31,8 +31,9 @@ class Agent(object):
             self.tools,
             self.llm,
             system_prompt=self.system_prompt
-        ),
+        )
         self.verbose=False
+        #print("DEBUG type(self.agent):", type(self.agent))
 
     async def ask_agent(self, question):
         """Ask the LlamaIndex agent; let it decide whether to call say() / go()."""
@@ -40,7 +41,6 @@ class Agent(object):
             response = await self.agent.run(user_msg=question)
             if self.verbose:
                 print( f"LLM result: {response}")
-            return result
         except Exception as e:
             print("⚠️  Agent error:", e)
             # Optional: fall back to a simple reply

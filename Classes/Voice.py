@@ -3,11 +3,18 @@ import pyttsx3
 class Voice(object):
     def __init__(self):
         self.engine = pyttsx3.init()
-        self.print_to_screen=False
+        self.print_to_screen=True
+        self._last_text = ""
+
+    def set_print_to_screen(self, print_to_screen: bool):
+        self.print_to_screen = print_to_screen
 
     def say(self, text: str)->None:
-        #self.engine.say( text ) # uncomment when you have a speaker
-        #self.engine.runAndWait()
+        if text == self._last_text:
+            return
+        self._last_text = text
+        self.engine.say( text ) # uncomment when you have a speaker
+        self.engine.runAndWait()
 
         if self.print_to_screen:
             print( f"Chester: {text}")
