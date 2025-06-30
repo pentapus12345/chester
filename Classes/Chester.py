@@ -3,6 +3,7 @@ from Classes.UltrasonicSensor import UltrasonicSensor
 from Classes.Listener import Listener
 from Classes.Agent import Agent
 from Classes.Voice import Voice
+from Classes.Memory import Memory
 import asyncio
 from dotenv import load_dotenv
 import os
@@ -16,7 +17,8 @@ class Chester(object):
         self.sensor = UltrasonicSensor()
         self.listener = Listener()
         self.voice = Voice()
-        self.agent = Agent([self.voice.say, self.go])
+        self.memory = Memory()
+        self.agent = Agent([self.voice.say, self.go, self.memory.remember])
 
         self.input_message = ""
         #api_key = os.getenv("OPEN_API_KEY")

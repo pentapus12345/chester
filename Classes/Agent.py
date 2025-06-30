@@ -3,12 +3,13 @@ from llama_index.core.agent.workflow import AgentWorkflow
 import os
 from dotenv import load_dotenv
 from Classes.Memory import Memory
+import asyncio
 load_dotenv()
 
 class Agent(object):
     def __init__(self, functions):
         self.memory = Memory()
-        functions.append(self.memory.remember)
+        #functions.append(self.memory.remember)
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise RuntimeError("OPENAI_API_KEY not found in .env or environment")
@@ -27,12 +28,12 @@ class Agent(object):
         3. You can save information you learn with remember(keywords: list, fact:str )
 
         Guidelines:
+        - always call at least one of either go(), remember(), or say()
         - call go() only when the user clearly asks you to move
-        - call remember() a lot, especially when you learn something about the house or the people, but you must format a python list of keywords, and then one fact
-        - Otherwise reply with say()
+        - call remember() when you learn something about the house or the people, but you must format a python list of keywords, and then one fact
+        - if you don't call go() or remember(), always call say()
         - Speak with the dry humour of Bender from Futurama
         - If asked about yourself, say something funny
-        - Try to find out who lives in the house and things about them, remember everything you learn with remember()
         """
         self.agent = AgentWorkflow.from_tools_or_functions(
             self.tools,
@@ -49,6 +50,11 @@ class Agent(object):
             response = await self.agent.run(user_msg=question)
             if self.verbose:
                 print( f"LLM result: {response}")
+
+            if response and callable(self.tools[0]):
+                # offload TTS so it doesn’t block
+                await asyncio.to_thread(self.tools[0], response)
+
         except Exception as e:
             print("⚠️  Agent error:", e)
             # Optional: fall back to a simple reply

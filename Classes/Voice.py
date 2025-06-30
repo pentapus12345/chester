@@ -1,8 +1,13 @@
+import sys
+sys.modules.pop("workflows.events", None)
+sys.modules.pop("workflows",       None)
+
+# 2) Now import pyttsx3 and init as normal
 import pyttsx3
 
 class Voice(object):
     def __init__(self):
-        self.engine = pyttsx3.init()
+        self.engine = pyttsx3.init(driverName="espeak")
         self.engine.setProperty("voice","com.apple.voice.compact.en-GB.Daniel")
         self.engine.setProperty("rate", 160)
         self.print_to_screen=True
