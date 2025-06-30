@@ -20,7 +20,11 @@ class Chester(object):
 
         self.input_message = ""
         #api_key = os.getenv("OPEN_API_KEY")
-        self.init()
+        self.set_debug_params()
+
+    async def initialize(self):
+        self.agent.ask_agent("introduce yourself by name in a few words")
+
 
 
     #async def do_not_crash(self):
@@ -30,12 +34,12 @@ class Chester(object):
     #    self.mover.setThrottle(0)
     #    print( "too close!")
 
-    def init(self):
+    def set_debug_params(self):
         self.mover.setThrottle(0)
         self.listener.set_print_to_screen(True)
-        self.verbose = False
+        self.verbose = True
         self.voice.set_print_to_screen(True)
-        self.agent.verbose = False
+        self.agent.verbose = True
     
 
     async def go(self):
@@ -52,8 +56,11 @@ class Chester(object):
 
     async def do_not_crash(self):
         while True:
-            if self.sensor.getDistance() < .3:
-                await self.mover.backup(0)
+            dist_cm = self.sensor.getDistance()
+            if dist_cm < 15 and not self.mover.getThrottle() == 0:                  # if closer than 30 cm
+                self.voice.say("uh oh")
+                await self.mover.backup(1.0)  # back up for 1 second
+            await asyncio.sleep(0.1)          # check ten times a second
 
             
         asyncio.create_task( self.get_message() )
@@ -62,12 +69,15 @@ class Chester(object):
     #    await self.input_message = self.listener.listen()
     #    await self.execute_message( self.input_message )
 
+
     async def listen_loop(self):
         while True:
-            sentence = await self.get_message()
-            if sentence:
-                await self.execute_message(sentence)
-
+            try:
+                sentence = await self.get_message()
+                if sentence:
+                    await self.execute_message(sentence)
+            except Exception as e:
+                print("⚠️ listen_loop error:", e)
 
 
     async def get_message(self):
@@ -78,6 +88,7 @@ class Chester(object):
         """
         msg = await asyncio.to_thread(self.listener.listen)   # ← key line
         return msg.strip()
+        await asyncio.sleep(.1)
 
     async def execute_message(self, msg: str):
         if self.verbose:
@@ -87,22 +98,16 @@ class Chester(object):
 
 
     async def main(self):
+        # schedule crash-avoidance in the background
+        asyncio.create_task(self.do_not_crash())
+        # then enter your normal listen/agent loop
         await self.listen_loop()
 
     def run(self):
         try:
             asyncio.run(self.main())
-            #loop = asyncio.get_event_loop()
-            #loop.create_task(self.do_not_crash())
-            #loop.create_task(self.get_message())
-            #self.mover.setThrottle(.5)
-            asyncio.run( self.do_not_crash())
         finally:
             self.mover.setThrottle(0)
-        #try:
-        #    loop.run_forever()
-        #finally:
-        #    loop.close()
 
 
     

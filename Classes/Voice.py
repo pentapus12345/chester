@@ -3,8 +3,11 @@ import pyttsx3
 class Voice(object):
     def __init__(self):
         self.engine = pyttsx3.init()
+        self.engine.setProperty("voice","com.apple.voice.compact.en-GB.Daniel")
+        self.engine.setProperty("rate", 160)
         self.print_to_screen=True
         self._last_text = ""
+        self.say("")
 
     def set_print_to_screen(self, print_to_screen: bool):
         self.print_to_screen = print_to_screen

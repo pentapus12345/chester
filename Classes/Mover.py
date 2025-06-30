@@ -3,7 +3,7 @@ from adafruit_pca9685 import PCA9685
 from board import SCL, SDA
 import busio
 from Classes.UltrasonicSensor import UltrasonicSensor
-import time
+import asyncio
 
 class Mover(object):
     def __init__(self):
@@ -25,8 +25,10 @@ class Mover(object):
     def setThrottle(self, throttle: float)->None:
         self.motor.throttle = throttle
 
+    def getThrottle(self)->float:
+        return self.motor.throttle
 
-    async def backup(self, angle: int)->None:
+    async def backup(self, duration):
         self.setThrottle(-.3)
-        time.sleep(1)
+        await asyncio.sleep(duration)
         self.setThrottle(0)
