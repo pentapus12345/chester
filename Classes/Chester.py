@@ -58,20 +58,15 @@ class Chester(object):
         while True:
             try:
                 dist_cm = self.sensor.getDistance()
-                if dist_cm < 15 and not self.mover.getThrottle() == 0:                  # if closer than 30 cm
-                    await self.voice.say("uh oh")
+                if dist_cm < 15 and self.mover.getThrottle() != 0:                  # if closer than 30 cm
+                    await asyncio.to_thread(self.voice.say("uh oh"))
                     await self.mover.backup(1.0)  # back up for 1 second
+                await asyncio.sleep(.1)
             except Exception as e:
                 print("⚠️ do_not_crash error:", e)
             await asyncio.sleep(0.1)          # check ten times a second
 
             
-        #asyncio.create_task( self.get_message() )
-
-    #async def get_message(self):
-    #    await self.input_message = self.listener.listen()
-    #    await self.execute_message( self.input_message )
-
 
     async def listen_loop(self):
         while True:
@@ -91,7 +86,7 @@ class Chester(object):
         """
         msg = await asyncio.to_thread(self.listener.listen)   # ← key line
         return msg.strip()
-        await asyncio.sleep(.1)
+
 
     async def execute_message(self, msg: str):
         if self.verbose:
