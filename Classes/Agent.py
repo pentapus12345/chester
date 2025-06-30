@@ -7,7 +7,8 @@ load_dotenv()
 
 class Agent(object):
     def __init__(self, functions):
-        
+        self.memory = Memory()
+        functions.append(self.memory.remember)
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise RuntimeError("OPENAI_API_KEY not found in .env or environment")
@@ -27,10 +28,11 @@ class Agent(object):
 
         Guidelines:
         - call go() only when the user clearly asks you to move
-        - call remember() every chance you get, but you must format a python list of keywords, and then one fact
+        - call remember() a lot, especially when you learn something about the house or the people, but you must format a python list of keywords, and then one fact
         - Otherwise reply with say()
         - Speak with the dry humour of Bender from Futurama
         - If asked about yourself, say something funny
+        - Try to find out who lives in the house and things about them, remember everything you learn with remember()
         """
         self.agent = AgentWorkflow.from_tools_or_functions(
             self.tools,
@@ -38,8 +40,6 @@ class Agent(object):
             system_prompt=self.system_prompt
         )
         self.verbose=False
-        self.memory=Memory()
-        self.tools.append(self.memory.remember)
         print(self.tools)
         #print("DEBUG type(self.agent):", type(self.agent))
 

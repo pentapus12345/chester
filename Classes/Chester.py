@@ -37,9 +37,9 @@ class Chester(object):
     def set_debug_params(self):
         self.mover.setThrottle(0)
         self.listener.set_print_to_screen(True)
-        self.verbose = True
+        self.verbose = False
         self.voice.set_print_to_screen(True)
-        self.agent.verbose = True
+        self.agent.verbose = False
     
 
     async def go(self):
@@ -56,14 +56,17 @@ class Chester(object):
 
     async def do_not_crash(self):
         while True:
-            dist_cm = self.sensor.getDistance()
-            if dist_cm < 15 and not self.mover.getThrottle() == 0:                  # if closer than 30 cm
-                self.voice.say("uh oh")
-                await self.mover.backup(1.0)  # back up for 1 second
+            try:
+                dist_cm = self.sensor.getDistance()
+                if dist_cm < 15 and not self.mover.getThrottle() == 0:                  # if closer than 30 cm
+                    await self.voice.say("uh oh")
+                    await self.mover.backup(1.0)  # back up for 1 second
+            except Exception as e:
+                print("⚠️ do_not_crash error:", e)
             await asyncio.sleep(0.1)          # check ten times a second
 
             
-        asyncio.create_task( self.get_message() )
+        #asyncio.create_task( self.get_message() )
 
     #async def get_message(self):
     #    await self.input_message = self.listener.listen()

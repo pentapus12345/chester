@@ -12,8 +12,14 @@ class UltrasonicSensor(object):
             trigger = ultrsonic_sensor["trigger"]
         self.sensor = DistanceSensor(echo=echo, trigger=trigger,max_distance=2)
 
+
     def getDistance(self):
-        return( self.sensor.distance) * 100 # unit: cm
+        try:
+            d = self.sensor.distance
+            return (d or float('inf')) * 100
+        except Exception as e:
+            print("⚠️ getDistance error:", e)
+            return float('inf')
     
     async def too_close(self, flag):
         too_close = False
