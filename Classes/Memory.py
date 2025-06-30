@@ -8,6 +8,7 @@ class Memory(object):
         self.verbose=True
 
     def remember(self, keywords: list, fact: str):
+        """This function saves a fact in a csv file which can be used later for RAG"""
         timestamp = datetime.now()
         line = f'"{datetime.strftime(timestamp,"%Y-%m-%d")}", "{datetime.strftime(timestamp, "%H:%M")}","{", ".join(keywords)}", "{fact}"\n' 
         with open(self.memories_file,'a') as fd:

@@ -12,17 +12,18 @@ class Voice(object):
     def set_print_to_screen(self, print_to_screen: bool):
         self.print_to_screen = print_to_screen
 
-    def say(self, text: str)->None:
+    def say(self, text: str, led=None)->None:
         if text == self._last_text:
             return
         self._last_text = text
-        self.engine.say( text ) # uncomment when you have a speaker
+        self.engine.say( text ) 
         self.engine.runAndWait()
 
         if self.print_to_screen:
             print( f"Chester: {text}")
 
     def change_speaking_volume(self, change: float = .1)->None:
+        """changes the volume of chester's voice, either up or down by the input parameter, change"""
         volume = self.engine.getProperty("volume")
         new_volume = volume + change
         if new_volume > 1:
@@ -30,6 +31,7 @@ class Voice(object):
         self.engine.setProperty("volume", new_volume)
 
     def change_speaking_speed(self, change: int = 10)->None:
+        """changes the speaking rate of chester's voice, either up or down by the input parameter, change"""
         rate = self.engine.getProperty( "rate")
         new_rate = rate + change
         self.engine.setProperty("rate", new_rate)
