@@ -1,15 +1,24 @@
 import busio
-from board import SCL, SDA
+from board import SCL, SDA, I2C
 from adafruit_pca9685 import PCA9685
 from adafruit_motor import servo
 
 class ServoControl(object):
+
     def __init__(self):
-        self.i2c = busio.I2C(SCL, SDA)
-        self.pwm_servo = PCA9685(self.i2c, address=0x5f)
+        # create a persistent I2C bus handle (no try_lock loop)
+        i2c = I2C()  
+        self.pwm_servo = PCA9685(i2c, address=0x5f)
         self.pwm_servo.frequency = 50
-        self.pos=[90,90,90]
+        #self.i2c = busio.I2C(SCL, SDA)
+        # initialize the PCA9685 on that bus
+        #self.pwm_servo = PCA9685(self.i2c, address=0x5f)
+        #self.pwm_servo.frequency = 50
+
+        self.pos = [90, 90, 90]
         self.initialize()
+
+            
 
 
     def set_angle(self, servo_id: int, angle: int)->None:
