@@ -9,6 +9,7 @@ class ServoControl(object):
         self.pwm_servo = PCA9685(self.i2c, address=0x5f)
         self.pwm_servo.frequency = 50
         self.pos=[90,90,90]
+        self.initialize()
 
 
     def set_angle(self, servo_id: int, angle: int)->None:
