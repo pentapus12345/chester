@@ -52,15 +52,12 @@ class Agent(object):
         )
         self.ctx = None
         try:
-            with open('Assets/context.pickle', 'rb') as handle:
-                b = pickle.load(handle)
-                # assume b is a dict with a list of streams under b["streams"]
-                for stream in b.get("streams", []):
-                    ensure_raw(stream)
-
-                self.ctx = Context.from_dict(self.agent, b, serializer=JsonSerializer())
-                print( "trying ")
-
+            #with open('Assets/context.json', 'rb') as handle:
+            #    self.ctx = Context.from_dict(self.agent, b, serializer=JsonPickleSerializer())
+            #    b = json.load(handle)
+            #    print( "trying ")
+            with open("ctx.pkl", "rb") as f:
+                self.ctx = pickle.load(f)
                 if self.verbose:
                     print( "I remember everything!")
         except Exception as e:
@@ -73,9 +70,12 @@ class Agent(object):
         #print("DEBUG type(self.agent):", type(self.agent))
 
     def save_context(self):
-        ctx_dict = self.ctx.to_dict(serializer=JsonSerializer())
-        with open('Assets/context.pickle', 'wb') as handle:
-            pickle.dump(ctx_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        #ctx_dict = self.ctx.to_dict(serializer=JsonPickleSerializer())
+        #with open('Assets/context.json', 'wb') as f:
+        #    json.dump(ctx_dict, f)
+        with open("Assets/ctx.pkl", "wb") as f:
+            pickle.dump(self.ctx, f)
+
 
     def ensure_raw(entry):
         entry.setdefault("raw", "")
