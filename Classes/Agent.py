@@ -54,20 +54,33 @@ class Agent(object):
         try:
             with open('Assets/context.pickle', 'rb') as handle:
                 b = pickle.load(handle)
-                self.ctx = Context.from_dict(self.llm, b, serializer=JsonSerializer())
-        except:
+                # assume b is a dict with a list of streams under b["streams"]
+                for stream in b.get("streams", []):
+                    ensure_raw(stream)
+
+                self.ctx = Context.from_dict(self.agent, b, serializer=JsonSerializer())
+                print( "trying ")
+
+                if self.verbose:
+                    print( "I remember everything!")
+        except Exception as e:
+            print( e )
+            print( "Generating new blank context.")
             self.ctx = Context( self.agent )
         
         self.verbose=False
-        print(self.tools)
+        #print(self.tools)
         #print("DEBUG type(self.agent):", type(self.agent))
 
-    def __del__(self):
+    def save_context(self):
         ctx_dict = self.ctx.to_dict(serializer=JsonSerializer())
         with open('Assets/context.pickle', 'wb') as handle:
             pickle.dump(ctx_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        print( "shutting down")
 
+    def ensure_raw(entry):
+        entry.setdefault("raw", "")
+        for tc in entry.get("tool_calls", []):
+            ensure_raw(tc)
 
 
     async def ask_agent(self, question):
@@ -82,6 +95,7 @@ class Agent(object):
                 # offload TTS so it doesn’t block
                 await asyncio.to_thread(self.tools[0], response)
 
+            self.save_context()
         except Exception as e:
             print("⚠️  Agent error:", e)
             # Optional: fall back to a simple reply
