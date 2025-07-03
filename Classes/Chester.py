@@ -18,7 +18,7 @@ class Chester(object):
         self.listener = Listener()
         self.voice = Voice()
         self.memory = Memory()
-        self.agent = Agent([self.voice.say, self.go, self.memory.remember])
+        self.agent = Agent([self.voice.say, self.go])
 
         self.input_message = ""
         #api_key = os.getenv("OPEN_API_KEY")
@@ -41,7 +41,7 @@ class Chester(object):
         self.listener.set_print_to_screen(True)
         self.verbose = False
         self.voice.set_print_to_screen(True)
-        self.agent.verbose = False
+        self.agent.verbose = True
     
 
     async def go(self):

@@ -16,7 +16,7 @@ class HeadMover(object):
             time_to_take=.1
         old_theta = self.servo_control.get_angle(self.hor_id)
         old_phi = self.servo_control.get_angle(self.vert_id)
-        steps = 10
+        steps = 2
         delta_t = time_to_take/steps
         for i in range(steps):
             factor = (steps-i)/steps

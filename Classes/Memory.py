@@ -17,4 +17,9 @@ class Memory(object):
                 print (f"Remembering: {fact}\nWith Keywords:{', '.join(keywords)}")
     
 
-  
+    def recall(self):
+        """This function simply reads the whole memories.csv file and returns it as a string"""
+        print (f"Recalling everyting")
+        with open(self.memories_file,'a') as fd:
+            lines =fd.readlines()
+            return( lines )

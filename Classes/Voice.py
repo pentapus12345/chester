@@ -2,7 +2,28 @@ import sys
 sys.modules.pop("workflows.events", None)
 sys.modules.pop("workflows",       None)
 
-# 2) Now import pyttsx3 and init as normal
+# near the top of Classes/Voice.py, before importing pyttsx3:
+
+# --- monkey-patch eSpeak to avoid any slicing errors in its callback ---
+import pyttsx3.drivers.espeak as _es
+# store the original, just in case
+_original_onSynth = _es.EspeakDriver._onSynth
+
+
+def _safe_onSynth(self, *args, **kwargs):
+    try:
+        # try the original
+        _original_onSynth(self, *args, **kwargs)
+    except Exception:
+        # ignore *any* exception inside the callback
+        pass
+    # always return an int so ctypes is happy
+    return 0
+
+# apply the patch
+_es.EspeakDriver._onSynth = _safe_onSynth
+
+# now import and use pyttsx3 normally
 import pyttsx3
 
 class Voice(object):
